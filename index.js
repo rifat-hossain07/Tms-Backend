@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb");
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -25,10 +25,19 @@ async function run() {
     const database = client.db("TmsDB");
     const taskCollection = database.collection("TasksList");
 
-    // to add Task data
+    // add Task data to databases
     app.post("/addTask", async (req, res) => {
       const task = req.body;
       const result = await taskCollection.insertOne(task);
+      res.send(result);
+    });
+
+    // to load all tasks
+    app.get("/tasks/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const cursor = taskCollection.find(filter);
+      const result = await cursor.toArray();
       res.send(result);
     });
     // Send a ping to confirm a successful connection
