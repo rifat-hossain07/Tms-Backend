@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -31,13 +31,35 @@ async function run() {
       const result = await taskCollection.insertOne(task);
       res.send(result);
     });
-
     // to load all tasks
     app.get("/tasks/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const cursor = taskCollection.find(filter);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Update Task
+    app.put("/tasks/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const title = req.body.title;
+      const description = req.body.description;
+      const deadline = req.body.deadline;
+      const priority = req.body.priority;
+      const status = req.body.status;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          title: title,
+          description: description,
+          status: status,
+          deadline: deadline,
+          priority: priority,
+        },
+      };
+      const result = await taskCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
     // Send a ping to confirm a successful connection
