@@ -62,6 +62,20 @@ async function run() {
       const result = await taskCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
+    // change the status of tasks when dragging
+    app.put("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await taskCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
     // delete the tasks
     app.delete("/delete/:id", async (req, res) => {
       const id = req.params.id;
