@@ -62,6 +62,13 @@ async function run() {
       const result = await taskCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
+    // delete the tasks
+    app.delete("/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await taskCollection.deleteOne(filter);
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(
